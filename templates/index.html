@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flask Website</title>
+    <script>
+        async function handleSubmit(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const url = document.getElementById('url').value;
+            const file = document.getElementById('file').files[0];
+
+            if (!url || !file) {
+                alert("Please provide both a URL and a PDF file.");
+                return;
+            }
+
+            formData.append('url', url);
+            formData.append('file', file);
+
+            const response = await fetch('/process', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                document.getElementById('result').value = data.result;
+            } else {
+                alert(data.error);
+            }
+        }
+        function handleReset(event) {
+            event.preventDefault();
+            document.getElementById('url').value = '';
+            document.getElementById('file').value = '';
+            document.getElementById('result').value = '';
+        }
+    </script>
+</head>
+<body>
+    <h1>Generate Cover Letter</h1>
+    <p>Fill in the form to generate a cover letter.</p>
+    <form onsubmit="handleSubmit(event)">
+        <label for="url">Enter Web URL:</label><br>
+        <input type="text" id="url" name="url" required><br><br>
+
+        <label for="file">Upload PDF:</label><br>
+        <input type="file" id="file" name="file" accept="application/pdf" required><br><br>
+
+        <button type="submit">Submit</button>
+        <button onclick="handleReset(event)">Reset</button>
+    </form>
+    <br>
+    <label for="result">Function Output:</label><br>
+    <textarea id="result" rows="10" cols="50" readonly></textarea>
+</body>
+</html>
